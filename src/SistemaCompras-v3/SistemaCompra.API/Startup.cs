@@ -12,6 +12,7 @@ using SistemaCompra.Domain.ProdutoAggregate;
 using SistemaCompra.Domain.SolicitacaoCompraAggregate;
 using SistemaCompra.Infra.Data;
 using SistemaCompra.Infra.Data.Produto;
+using SistemaCompra.Infra.Data.SolicitacaoCompra;
 using SistemaCompra.Infra.Data.UoW;
 using System;
 
@@ -36,6 +37,7 @@ namespace SistemaCompra.API
 
             services.AddScoped<IProdutoRepository, ProdutoRepository>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
+            services.AddScoped<ISolicitacaoCompraRepository, SolicitacaoCompraRepository>();
 
             services.AddDbContext<SistemaCompraContext>(options =>
                 options.UseSqlServer(

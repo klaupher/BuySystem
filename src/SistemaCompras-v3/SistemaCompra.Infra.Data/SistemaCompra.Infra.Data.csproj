@@ -19,4 +19,8 @@
     <ProjectReference Include="..\SistemaCompra.Domain\SistemaCompra.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Migrations\" />
+  </ItemGroup>
+
 </Project>

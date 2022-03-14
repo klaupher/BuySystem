@@ -14,8 +14,27 @@ namespace SistemaCompra.Domain.SolicitacaoCompraAggregate
         public NomeFornecedor NomeFornecedor { get; private set; }
         public IList<Item> Itens { get; private set; }
         public DateTime Data { get; private set; }
-        public Money TotalGeral { get; private set; }
+        public Money TotalGeral {
+            get {
+                if (Itens.Count == 0)
+                    throw new BusinessRuleException("A solicitação de compra deve possuir itens!");
+
+                foreach (var item in Itens)
+                {
+                    TotalGeral.Add(item.Subtotal);
+                }
+                return TotalGeral;
+            }
+            private set { }
+        }
         public Situacao Situacao { get; private set; }
+
+        public CondicaoPagamento CondicaoPagamento {
+            get
+            {
+                return (TotalGeral.Value > 50000) ? new CondicaoPagamento(30) : new CondicaoPagamento(0);
+            }
+            private set { } }
 
         private SolicitacaoCompra() { }
 
@@ -36,30 +55,11 @@ namespace SistemaCompra.Domain.SolicitacaoCompraAggregate
         public void RegistrarCompra(IEnumerable<Item> itens)
         {
             if (Itens.Count == 0) 
-                throw new BusinessRuleException("Itens insuficientes nessa compra.!");
+                throw new BusinessRuleException("A solicitação de compra deve possuir itens!");
 
-            var totalGeralCompra = ObtemTotalGeral();
-
-            AddEvent(new CompraRegistradaEvent(Id,Itens,totalGeralCompra));
+            AddEvent(new CompraRegistradaEvent(Id,Itens,TotalGeral.Value));
         }
 
-        private decimal ObtemTotalGeral()
-        {
-            if (Itens.Count == 0)
-                throw new BusinessRuleException("Itens insuficientes nessa compra.");
-
-            decimal totalGeralTemporario = 0;
-            foreach (var item in Itens)
-            {
-                totalGeralTemporario += item.Subtotal.Value;
-            }
-
-            return totalGeralTemporario;
-        }
-
-        public string ObtemCondicaoPagamento()
-        {
-            return ObtemTotalGeral() > 50000 ? "30 dias" : "A vista";
-        }
+        
     }
 }
